@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Varu — groceries, kids, beauty and services on your island</title>
-  <meta name="description" content="Varu is the everyday marketplace for Maldivian islands. Groceries, kids essentials, cosmetics and home services, scoped to the island you live on." />
+  <title>Foaru — groceries, kids, beauty and services on your island</title>
+  <meta name="description" content="Foaru is the everyday marketplace for Maldivian islands. Shop foaru.com for groceries, kids essentials, cosmetics and home services, scoped to the island you live on." />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div class="wrap">
     <header class="nav">
-      <a class="logo" href="index.html"><span class="logo-mark"></span> varu</a>
+      <a class="logo" href="index.html"><span class="logo-mark"></span> foaru</a>
       <nav class="nav-links">
         <a href="shop.html">Shop</a>
         <a href="services.html">Services</a>
@@ -26,17 +26,12 @@
     </header>
     <section class="hero">
       <div>
-        <p class="eyebrow">Made for the island you actually live on</p>
+        <p class="eyebrow">foaru.com · Made for the island you actually live on</p>
         <h1>The market that knows which island you’re standing on.</h1>
         <p class="lead">Groceries, kids essentials, cosmetics and home services — only what is on your island today, or coming on the next supply boat.</p>
         <div class="hero-actions">
           <a class="btn btn-dark" href="register.html">Start with phone &amp; email</a>
           <a class="btn btn-ghost" href="shop.html">Browse Fuvahmulah</a>
-        </div>
-        <div class="hero-meta">
-          <div><strong>8</strong> islands live now</div>
-          <div><strong>3</strong> opening this quarter</div>
-          <div><strong>MVR</strong> prices, no surprise FX</div>
         </div>
       </div>
       <div class="hero-card">
@@ -49,18 +44,6 @@
     </section>
   </div>
   <div class="band"><div class="wrap"><span>Malé · Hulhumalé · Villingili · Hithadhoo · Fuvahmulah · Kulhudhuffushi · Thinadhoo · Gan</span><span>Pick your island before you shop.</span></div></div>
-  <section class="section">
-    <div class="wrap">
-      <p class="eyebrow">Four aisles, one account</p>
-      <h2>What neighbours actually run out of.</h2>
-      <div class="grid-4" style="margin-top:22px">
-        <article class="card"><p class="eyebrow">01</p><h3>Groceries</h3><p class="muted small">Staples, produce, water, this morning’s fish. Badged on island or next boat.</p></article>
-        <article class="card"><p class="eyebrow">02</p><h3>Kids</h3><p class="muted small">Diapers, wash, school bits and KUDA BOH cotton.</p></article>
-        <article class="card"><p class="eyebrow">03</p><h3>Beauty</h3><p class="muted small">Sunscreen, hair oil, chemist stock.</p></article>
-        <article class="card"><p class="eyebrow">04</p><h3>Services</h3><p class="muted small">AC, plumber, laundry, babysitting, home salon.</p></article>
-      </div>
-    </div>
-  </section>
   <section class="section" id="plans" style="background:var(--sand)">
     <div class="wrap">
       <p class="eyebrow">Subscription</p>
@@ -70,18 +53,19 @@
   </section>
   <footer class="site">
     <div class="wrap foot-bottom">
-      <span>Varu Marketplace · Maldives</span>
-      <span><a href="contact.html">Contact</a> · <a href="privacy.html">Privacy</a></span>
+      <span>foaru.com · Maldives</span>
+      <span>hello@foaru.com · <a href="contact.html">Contact</a></span>
     </div>
   </footer>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
   <script>
-    document.getElementById("plan-grid").innerHTML = Varu.state.plans.map(p => `
+    const App = window.Foaru || window.Varu;
+    document.getElementById("plan-grid").innerHTML = App.state.plans.map(p => `
       <article class="plan ${p.popular ? "popular" : ""}">
         ${p.popular ? '<span class="badge-pop">Most kept</span>' : ""}
         <p class="eyebrow">${p.name}</p>
-        <div class="price">${Varu.mvr(p.price)} <span>/ ${p.period}</span></div>
+        <div class="price">${App.mvr(p.price)} <span>/ ${p.period}</span></div>
         <p class="muted small">${p.blurb}</p>
         <ul>${p.features.map(f => `<li>${f}</li>`).join("")}</ul>
         <a class="btn ${p.popular ? "btn-lagoon" : "btn-ghost"} btn-wide" href="register.html?plan=${p.id}">Choose ${p.name}</a>
