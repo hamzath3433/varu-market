@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign in to Varu</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <aside class="auth-visual">
+      <div class="copy">
+        <a class="logo" href="index.html" style="color:#f6efe3"><span class="logo-mark" style="background:#c4a574"></span> varu</a>
+        <div>
+          <h2 style="font-size:40px;color:#fff">Back to your island aisle.</h2>
+          <p style="margin-top:12px;opacity:.85">Demo desks — admin@varu.mv / varuadmin · nala@varu.mv / nala123</p>
+        </div>
+      </div>
+    </aside>
+    <main class="auth-panel">
+      <p class="muted small">New here? <a href="register.html"><strong>Create an account</strong></a></p>
+      <h1 style="font-size:34px;margin:10px 0 22px">Sign in</h1>
+      <form id="login">
+        <div class="form-row">
+          <label>Email</label>
+          <input class="field" name="email" type="email" value="nala@varu.mv" />
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input class="field" name="password" type="password" value="nala123" />
+        </div>
+        <button class="btn btn-lagoon btn-wide" type="submit">Sign in</button>
+      </form>
+      <p class="hint" style="margin-top:18px">Master admin lives at <a href="admin.html">admin.html</a> after signing in as admin@varu.mv.</p>
+    </main>
+  </div>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById("login").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const res = Varu.login(fd.get("email"), fd.get("password"));
+      if (!res.ok) return Varu.toast(res.error);
+      location.href = res.user.role === "admin" ? "admin.html" : "shop.html";
+    });
+  </script>
+</body>
+</html>
