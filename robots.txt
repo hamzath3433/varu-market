@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hamzath3433.github.io/varu-market/sitemap.xml
