@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Services — Varu</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="appbar">
+    <div class="wrap-wide">
+      <a class="logo" href="index.html"><span class="logo-mark"></span> varu</a>
+      <div style="flex:1"></div>
+      <label class="island-switch">Island <select id="island"></select></label>
+      <a class="btn btn-ghost" href="shop.html">Shop</a>
+      <a class="btn btn-dark" href="cart.html">Basket <span data-cart-count>0</span></a>
+    </div>
+  </header>
+  <main class="wrap-wide" style="padding:28px 0 60px">
+    <p class="eyebrow">Booked on your island only</p>
+    <h1 style="font-size:36px;margin-bottom:8px">People who already work here.</h1>
+    <p class="muted" style="margin-bottom:22px">If they do not cover this island, they do not appear.</p>
+    <div class="cats" id="cats"></div>
+    <div class="grid-3" id="grid"></div>
+  </main>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let cat = "all";
+    const cats = [["all","All"],["home","Home"],["kids","Kids"],["beauty","Beauty"]];
+    function paint() {
+      document.getElementById("cats").innerHTML = cats.map(([id,l]) =>
+        `<button class="cat ${cat===id?"on":""}" data-cat="${id}">${l}</button>`).join("");
+      const list = Varu.servicesFor(Varu.state.island, cat);
+      document.getElementById("grid").innerHTML = list.map(s => `
+        <article class="card">
+          <p class="eyebrow">${s.cat}</p>
+          <h3>${s.name}</h3>
+          <p class="muted small">${s.duration}</p>
+          <p style="margin:12px 0;font-weight:600">${Varu.mvr(s.price)}</p>
+          <button class="btn btn-lagoon" onclick="book('${s.id}')">Request window</button>
+        </article>
+      `).join("") || `<p class="muted">No crews on this island for that category yet.</p>`;
+    }
+    function book(id) {
+      const u = Varu.currentUser();
+      if (!u) { Varu.toast("Sign in to book"); return location.href = "login.html"; }
+      if (!u.plan) { Varu.toast("Pick a membership first"); return location.href = "account.html"; }
+      Varu.toast("Request sent to the island crew");
+    }
+    document.getElementById("cats").addEventListener("click", e => {
+      const b = e.target.closest("[data-cat]"); if (!b) return; cat = b.dataset.cat; paint();
+    });
+    const sel = document.getElementById("island");
+    Varu.fillIslandSelect(sel, true);
+    sel.addEventListener("change", () => { Varu.setIsland(sel.value); paint(); });
+    paint();
+  </script>
+</body>
+</html>
