@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Varu</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="wrap"><header class="nav"><a class="logo" href="index.html"><span class="logo-mark"></span> varu</a><div class="nav-cta"><a class="btn btn-lagoon" href="register.html">Create account</a></div></header></div>
+  <section class="section"><div class="wrap" style="max-width:720px">
+    <p class="eyebrow">Contact us</p>
+    <h1 style="font-size:44px;margin:8px 0 12px">Write to the desk. The master admin gets the email.</h1>
+    <form class="card" id="contact">
+      <div class="form-2"><div class="form-row"><label>Your name</label><input class="field" name="name" required /></div><div class="form-row"><label>Email</label><input class="field" name="email" type="email" required /></div></div>
+      <div class="form-row"><label>Island</label><select class="field" name="island" id="island"></select></div>
+      <div class="form-row"><label>Topic</label><select class="field" name="topic"><option>Membership and fees</option><option>An order or delivery window</option><option>Open my island</option><option>List my shop</option><option>Something else</option></select></div>
+      <div class="form-row"><label>Message</label><textarea class="field" name="message" rows="5" required></textarea></div>
+      <button class="btn btn-lagoon" type="submit">Send to master admin</button>
+      <p class="hint" id="contact-status"></p>
+    </form>
+  </div></section>
+  <script src="js/config.js"></script><script src="js/data.js"></script><script src="js/app.js"></script><script src="js/mail.js"></script>
+  <script>
+    Varu.fillIslandSelect(document.getElementById("island"), true);
+    document.getElementById("contact").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      document.getElementById("contact-status").textContent = "Sending…";
+      const result = await VaruMail.notifyAdmin("Varu contact — " + fd.get("topic"), {
+        name: fd.get("name"), email: fd.get("email"), island: fd.get("island"), topic: fd.get("topic"), message: fd.get("message")
+      });
+      document.getElementById("contact-status").textContent = result.ok ? "Sent to the master admin." : "Saved on the desk. Email pending.";
+    });
+  </script>
+</body></html>

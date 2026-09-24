@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create a Varu account</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <aside class="auth-visual"><div class="copy"><a class="logo" href="index.html" style="color:#f6efe3"><span class="logo-mark"></span> varu</a><div><p class="eyebrow" style="color:#c4a574">Two locks, then the aisle</p><h2 style="font-size:36px;color:#fff">Codes send themselves the moment email or phone is complete.</h2></div></div></aside>
+    <main class="auth-panel">
+      <p class="muted small">Already on Varu? <a href="login.html"><strong>Sign in</strong></a></p>
+      <h1 style="font-size:34px;margin:10px 0 6px">Create account</h1>
+      <p class="muted" id="step-label">Step 1 of 5</p>
+      <div class="steps" id="dots"></div>
+      <form id="reg" onsubmit="return false">
+        <section data-step="0"><div class="form-row"><label>Full name</label><input class="field" id="name" /></div><div class="form-row"><label>Home island</label><select class="field" id="island"></select></div><button class="btn btn-lagoon btn-wide" type="button" onclick="nextFrom(0)">Continue</button></section>
+        <section data-step="1" hidden><div class="form-row"><label>Email</label><input class="field" id="email" type="email" placeholder="you@example.com" /><p class="hint">Code sends automatically.</p></div><p class="muted small" id="email-status">Waiting for a complete email…</p><div id="email-box" hidden><div class="notice">Code dispatched to <span id="email-to"></span>.</div><label>Email code</label><div class="code-row" id="email-inputs"></div><button class="btn btn-dark btn-wide" style="margin-top:14px" type="button" onclick="checkEmail()">Verify email</button></div></section>
+        <section data-step="2" hidden><div class="form-row"><label>Mobile</label><div style="display:flex;gap:8px"><input class="field" value="+960" disabled style="max-width:90px" /><input class="field" id="phone" maxlength="7" placeholder="7XXXXXX" /></div></div><p class="muted small" id="phone-status">Waiting for a Maldivian mobile…</p><div id="phone-box" hidden><div class="notice">Code for +960 <span id="phone-to"></span> sent to your email.</div><label>Phone code</label><div class="code-row" id="phone-inputs"></div><button class="btn btn-dark btn-wide" style="margin-top:14px" type="button" onclick="checkPhone()">Verify phone</button></div></section>
+        <section data-step="3" hidden><div class="form-2"><div class="form-row"><label>Password</label><input class="field" id="pw" type="password" /></div><div class="form-row"><label>Repeat</label><input class="field" id="pw2" type="password" /></div></div><button class="btn btn-lagoon btn-wide" type="button" onclick="nextFrom(3)">Choose a plan</button></section>
+        <section data-step="4" hidden><div id="plan-pick" style="display:grid;gap:10px;margin-bottom:16px"></div><button class="btn btn-dark btn-wide" type="button" onclick="finish()">Open my island aisle</button></section>
+      </form>
+    </main>
+  </div>
+  <script src="js/config.js"></script><script src="js/data.js"></script><script src="js/app.js"></script><script src="js/mail.js"></script>
+  <script>
+    const labels=["Step 1 of 5 — who you are","Step 2 — verify email","Step 3 — verify phone","Step 4 — password","Step 5 — membership"];
+    let step=0; const draft={plan:new URLSearchParams(location.search).get("plan")||"household"}; const codes={email:"",phone:""};
+    const makeCode=()=>String(Math.floor(100000+Math.random()*900000));
+    function renderDots(){document.getElementById("dots").innerHTML=labels.map((_,i)=>`<div class="step-dot ${i<=step?"on":""}"></div>`).join("");document.getElementById("step-label").textContent=labels[step];document.querySelectorAll("[data-step]").forEach(s=>s.hidden=Number(s.dataset.step)!==step);}
+    function codeInputs(id){const row=document.getElementById(id);row.innerHTML="";for(let i=0;i<6;i++){const inp=document.createElement("input");inp.maxLength=1;inp.className="field";inp.addEventListener("input",()=>{if(inp.value&&inp.nextSibling)inp.nextSibling.focus();});row.appendChild(inp);}}
+    function readCode(id){return[...document.getElementById(id).querySelectorAll("input")].map(i=>i.value).join("");}
+    function nextFrom(n){if(n===0){const name=document.getElementById("name").value.trim();if(name.length<2)return Varu.toast("Add your name");draft.name=name;draft.island=document.getElementById("island").value;}if(n===3){const a=document.getElementById("pw").value,b=document.getElementById("pw2").value;if(a.length<6)return Varu.toast("Password needs 6 characters");if(a!==b)return Varu.toast("Passwords do not match");draft.password=a;}step=Math.min(4,n+1);renderDots();}
+    async function sendEmail(){const email=document.getElementById("email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;if(draft.email===email&&codes.email)return;draft.email=email;codes.email=makeCode();document.getElementById("email-to").textContent=email;document.getElementById("email-status").textContent="Sending…";document.getElementById("email-box").hidden=false;codeInputs("email-inputs");const sent=await VaruMail.sendCode(email,"email",codes.email,{name:draft.name});document.getElementById("email-status").textContent=sent.ok?"Code sent. Open that inbox.":"Could not reach inbox yet.";}
+    async function sendPhone(){const phone=document.getElementById("phone").value.replace(/\D/g,"");if(!/^7\d{6}$/.test(phone))return;if(draft.phone===phone&&codes.phone)return;draft.phone=phone;codes.phone=makeCode();document.getElementById("phone-to").textContent=phone;document.getElementById("phone-status").textContent="Sending…";document.getElementById("phone-box").hidden=false;codeInputs("phone-inputs");const sent=await VaruMail.sendCode(draft.email,"phone",codes.phone,{name:draft.name,phone:"+960 "+phone});VaruMail.notifyAdmin("Varu — phone verification started",{name:draft.name,email:draft.email,phone:"+960 "+phone});document.getElementById("phone-status").textContent=sent.ok?"Code sent to your email.":"Send failed.";}
+    function checkEmail(){if(readCode("email-inputs")!==codes.email)return Varu.toast("Email code is not right");nextFrom(1);}
+    function checkPhone(){if(readCode("phone-inputs")!==codes.phone)return Varu.toast("Phone code is not right");nextFrom(2);}
+    async function finish(){const picked=document.querySelector("input[name=plan]:checked");draft.plan=picked?picked.value:draft.plan;const res=Varu.register(draft);if(!res.ok)return Varu.toast(res.error);await VaruMail.notifyAdmin("Varu — new household joined",{name:draft.name,email:draft.email,phone:"+960 "+draft.phone,plan:draft.plan});location.href="shop.html";}
+    Varu.fillIslandSelect(document.getElementById("island"));
+    document.getElementById("plan-pick").innerHTML=Varu.state.plans.map(p=>`<label class="card" style="display:flex;gap:12px;cursor:pointer"><input type="radio" name="plan" value="${p.id}" ${p.id===draft.plan?"checked":""}/><div><strong>${p.name}</strong> · ${Varu.mvr(p.price)}/${p.period}<div class="muted small">${p.blurb}</div></div></label>`).join("");
+    renderDots();
+    document.getElementById("email").addEventListener("input",()=>{if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById("email").value.trim()))sendEmail();});
+    document.getElementById("phone").addEventListener("input",e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,7);if(/^7\d{6}$/.test(e.target.value))sendPhone();});
+  </script>
+</body></html>
