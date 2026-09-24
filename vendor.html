@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>List your shop — Varu</title><link rel="stylesheet" href="css/styles.css" /></head>
+<body><div class="wrap"><header class="nav"><a class="logo" href="index.html"><span class="logo-mark"></span> varu</a></header>
+<section class="section"><p class="eyebrow">For shops</p><h1>Sell on the island you already stand on.</h1>
+<form class="card" style="margin-top:20px;max-width:640px" onsubmit="event.preventDefault();Varu.toast('Request saved');">
+<div class="form-row"><label>Shop name</label><input class="field" required /></div>
+<div class="form-row"><label>Island</label><select class="field" id="island"></select></div>
+<button class="btn btn-dark" type="submit">Send to the desk</button></form></section></div>
+<script src="js/data.js"></script><script src="js/app.js"></script>
+<script>Varu.fillIslandSelect(document.getElementById("island"),true);</script></body></html>
